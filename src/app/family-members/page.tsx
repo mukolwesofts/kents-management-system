@@ -7,7 +7,7 @@ export default function FamilyMembersPage() {
             <div className="flex items-center justify-between mb-8">
                 <h1 className="text-2xl font-bold text-teal-700 mb-4">Family Members</h1>
 
-                <FamilyMembersModal />
+                {/* <FamilyMembersModal /> */}
             </div>
 
             <FamilyMembersList />

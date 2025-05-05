@@ -1,53 +1,71 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Table from '@/components/Table';
 import SearchInput from '@/components/SearchInput';
+import Modal from '@/components/Modal';
+import FamilyMemberForm from './FamilyMemberForm';
 
 interface FamilyMember {
-    id: string;
+    id: number;
     name: string;
     designation: 'sister' | 'dad' | 'mom' | 'brother';
 }
 
-// Example data - replace with your actual data source
-const exampleData: FamilyMember[] = [
-    { id: '1', name: 'John Doe', designation: 'dad' },
-    { id: '2', name: 'Jane Doe', designation: 'mom' },
-    { id: '3', name: 'Alice Doe', designation: 'sister' },
-    { id: '4', name: 'Bob Doe', designation: 'brother' },
-];
-
-const columns = [
-    { header: 'Name', accessor: 'name' as const },
-    {
-        header: 'Designation',
-        accessor: 'designation' as const,
-        render: (item: FamilyMember) => (
-            <span className="capitalize">{item.designation}</span>
-        ),
-    },
-];
-
 export default function FamilyMembersList() {
+    const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const handleView = (item: FamilyMember) => {
-        alert(`Viewing ${item.name}`);
+    useEffect(() => {
+        fetchFamilyMembers();
+    }, []);
+
+    const fetchFamilyMembers = async () => {
+        const response = await fetch('/api/family-members');
+        const data = await response.json();
+        setFamilyMembers(data);
     };
 
-    const handleEdit = (item: FamilyMember) => {
-        alert(`Editing ${item.name}`);
+    const handleAdd = async (member: Omit<FamilyMember, 'id'>) => {
+        await fetch('/api/family-members', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(member),
+        });
+        fetchFamilyMembers();
+        handleClose(); // Close the modal after adding
     };
 
-    const handleDelete = (item: FamilyMember) => {
-        alert(`Deleting ${item.name}`);
+    const handleClose = () => {
+        setIsModalOpen(false); // Close the modal
     };
+
+    const handleOpen = () => {
+        console.log('Open modal');
+        setIsModalOpen(true);
+        console.log('Modal opened', isModalOpen);
+    };
+
+    const handleDelete = async (id: number) => {
+        await fetch(`/api/family-members?id=${id}`, { method: 'DELETE' });
+        fetchFamilyMembers();
+    };
+
+    const columns = [
+        { header: 'Name', accessor: 'name' as const },
+        {
+            header: 'Designation',
+            accessor: 'designation' as const,
+            render: (item: FamilyMember) => (
+                <span className="capitalize">{item.designation}</span>
+            ),
+        },
+    ];
 
     const actions = [
-        { label: 'View', onClick: handleView, className: 'text-green-500 hover:text-green-600' },
-        { label: 'Edit', onClick: handleEdit, className: 'text-yellow-500 hover:text-yellow-600' },
-        { label: 'Delete', onClick: handleDelete, className: 'text-red-500 hover:text-red-600' },
+        { label: 'Edit', onClick: (item: FamilyMember) => console.log('Edit', item) },
+        { label: 'Delete', onClick: (item: FamilyMember) => handleDelete(item.id) },
     ];
 
     return (
@@ -60,9 +78,32 @@ export default function FamilyMembersList() {
                 />
             </div>
 
+            {/* Add family member modal */}
+            <Modal
+                isOpen={isModalOpen}
+                onClose={handleClose}
+                trigger={
+                    <button
+                        onClick={handleOpen}
+                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                    >
+                        Add Family Member
+                    </button>
+                }
+                title="Add Family Member"
+            >
+                {/* Add family member form */}
+                <FamilyMemberForm
+                    onSubmit={(data) => {
+                        handleAdd(data);
+                    }}
+                />
+            </Modal>
+
+            {/* Family members table */}
             <Table
                 columns={columns}
-                data={exampleData}
+                data={familyMembers}
                 searchTerm={searchTerm}
                 searchFields={['name', 'designation']}
                 actions={actions}
