@@ -28,19 +28,19 @@ export default function Modal({ trigger, title, children, onClose }: ModalProps)
                     {/* Backdrop */}
                     <div
                         className="fixed inset-0 bg-black/50"
-                        // onClick={handleClose}
+                        onClick={handleClose}
                     />
 
                     {/* Modal */}
                     <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
                         {/* Header */}
-                        <div className="flex items-center justify-between p-4 border-b">
+                        <div className="flex items-center justify-between p-4 border-b border-gray-300">
                             <div className="text-lg font-semibold">
                                 {title}
                             </div>
                             <button
                                 onClick={handleClose}
-                                className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                                className="p-1 px-1.5 hover:bg-gray-100 rounded-md transition-colors"
                             >
                                 <span className='w-6 h-6 cursor-pointer font-semibold'>X</span>
                             </button>
