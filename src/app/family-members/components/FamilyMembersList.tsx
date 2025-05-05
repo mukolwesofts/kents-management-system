@@ -16,6 +16,7 @@ export default function FamilyMembersList() {
     const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [currentFamilyMember, setCurrentFamilyMember] = useState<FamilyMember | null>(null);
 
     useEffect(() => {
         fetchFamilyMembers();
@@ -27,24 +28,34 @@ export default function FamilyMembersList() {
         setFamilyMembers(data);
     };
 
-    const handleAdd = async (member: Omit<FamilyMember, 'id'>) => {
-        await fetch('/api/family-members', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(member),
-        });
+    const handleAddOrUpdate = async (member: Omit<FamilyMember, 'id'>) => {
+        if (currentFamilyMember) {
+            // Update existing family member
+            await fetch(`/api/family-members`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: currentFamilyMember.id, ...member }),
+            });
+        } else {
+            // Add new family member
+            await fetch('/api/family-members', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(member),
+            });
+        }
         fetchFamilyMembers();
-        handleClose(); // Close the modal after adding
+        handleClose();
     };
 
     const handleClose = () => {
-        setIsModalOpen(false); // Close the modal
+        setIsModalOpen(false);
+        setCurrentFamilyMember(null);
     };
 
-    const handleOpen = () => {
-        console.log('Open modal');
+    const handleOpen = (member?: FamilyMember) => {
+        setCurrentFamilyMember(member || null);
         setIsModalOpen(true);
-        console.log('Modal opened', isModalOpen);
     };
 
     const handleDelete = async (id: number) => {
@@ -64,41 +75,53 @@ export default function FamilyMembersList() {
     ];
 
     const actions = [
-        { label: 'Edit', onClick: (item: FamilyMember) => console.log('Edit', item) },
-        { label: 'Delete', onClick: (item: FamilyMember) => handleDelete(item.id) },
+        {
+            label: 'Edit',
+            onClick: (item: FamilyMember) => handleOpen(item),
+            className: 'text-blue-500',
+        },
+        {
+            label: 'Delete',
+            onClick: (item: FamilyMember) => handleDelete(item.id),
+            className: 'text-red-500',
+        },
     ];
 
     return (
         <div className="space-y-8">
-            <div className="max-w-md">
-                <SearchInput
-                    value={searchTerm}
-                    onChange={setSearchTerm}
-                    placeholder="Search family members..."
-                />
-            </div>
+            <div className="flex items-center justify-between">
+                {/* Search Input */}
+                <div className="max-w-md w-full">
+                    <SearchInput
+                        value={searchTerm}
+                        onChange={setSearchTerm}
+                        placeholder="Search family members..."
+                    />
+                </div>
 
-            {/* Add family member modal */}
-            <Modal
-                isOpen={isModalOpen}
-                onClose={handleClose}
-                trigger={
-                    <button
-                        onClick={handleOpen}
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
-                    >
-                        Add Family Member
-                    </button>
-                }
-                title="Add Family Member"
-            >
-                {/* Add family member form */}
-                <FamilyMemberForm
-                    onSubmit={(data) => {
-                        handleAdd(data);
-                    }}
-                />
-            </Modal>
+                {/* Add family member modal */}
+                <Modal
+                    isOpen={isModalOpen}
+                    onClose={handleClose}
+                    trigger={
+                        <button
+                            onClick={() => handleOpen()}
+                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                        >
+                            Add Family Member
+                        </button>
+                    }
+                    title={currentFamilyMember ? 'Edit Family Member' : 'Add Family Member'}
+                >
+                    {/* Add/Edit family member form */}
+                    <FamilyMemberForm
+                        initialData={currentFamilyMember || undefined}
+                        onSubmit={(data) => {
+                            handleAddOrUpdate(data);
+                        }}
+                    />
+                </Modal>
+            </div>
 
             {/* Family members table */}
             <Table
