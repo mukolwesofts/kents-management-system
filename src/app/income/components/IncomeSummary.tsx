@@ -55,20 +55,20 @@ export default function IncomeSummary({ selectedMonth }: IncomeSummaryProps) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">Total Income</h3>
-                <p className="text-3xl font-bold text-teal-600">
+                <h3 className="text-sm font-semibold text-gray-700 mb-2">Total Income</h3>
+                <p className="text-lg font-bold text-teal-600">
                     {formatCurrency(summary.totalIncome || 0)}
                 </p>
             </div>
             <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">Total Entries</h3>
-                <p className="text-3xl font-bold text-teal-600">
+                <h3 className="text-sm font-semibold text-gray-700 mb-2">Total Entries</h3>
+                <p className="text-lg font-bold text-teal-600">
                     {summary.totalEntries}
                 </p>
             </div>
             <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">Average Income</h3>
-                <p className="text-3xl font-bold text-teal-600">
+                <h3 className="text-sm font-semibold text-gray-700 mb-2">Average Income</h3>
+                <p className="text-lg font-bold text-teal-600">
                     {formatCurrency(summary.averageIncome || 0)}
                 </p>
             </div>
