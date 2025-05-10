@@ -6,7 +6,7 @@ interface ShimmerProps {
     columns?: number;
 }
 
-export default function Shimmer({ type, rows = 3, columns = 4 }: ShimmerProps) {
+export default function Shimmer({ type, rows = 3, columns = 3 }: ShimmerProps) {
     const shimmerClass = "animate-pulse bg-gray-200 rounded";
     
     if (type === 'table') {
