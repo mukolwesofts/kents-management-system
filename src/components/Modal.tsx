@@ -32,7 +32,7 @@ export default function Modal({ isOpen, onClose, trigger, title, children }: Mod
                             <div className="text-lg font-semibold">{title}</div>
                             <button
                                 onClick={onClose}
-                                className="p-1 px-1.5 hover:bg-gray-100 rounded-md transition-colors"
+                                className="p-1 px-1.5 hover:bg-gray-100 rounded-md transition-colors cursor-pointer"
                             >
                                 <span className="w-6 h-6 cursor-pointer font-semibold">X</span>
                             </button>

@@ -26,6 +26,7 @@ interface ShoppingCategory {
 export default function ShoppingList() {
     const [shoppingItems, setShoppingItems] = useState<ShoppingItem[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
     const [isItemModalOpen, setIsItemModalOpen] = useState(false);
     const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
     const [currentItem, setCurrentItem] = useState<ShoppingItem | null>(null);
@@ -33,10 +34,10 @@ export default function ShoppingList() {
 
     useEffect(() => {
         fetchShoppingItems();
-    }, []);
+    }, [selectedMonth]);
 
     const fetchShoppingItems = async () => {
-        const response = await fetch('/api/shopping-items');
+        const response = await fetch(`/api/shopping-items?month=${selectedMonth}`);
         const data = await response.json();
         setShoppingItems(data);
     };
@@ -149,13 +150,23 @@ export default function ShoppingList() {
     return (
         <div className="space-y-8">
             <div className="flex items-center justify-between">
-                {/* Search Input */}
-                <div className="w-auto min-w-[300px]">
-                    <SearchInput
-                        value={searchTerm}
-                        onChange={setSearchTerm}
-                        placeholder="Search shopping items..."
-                    />
+                {/* Search and Filter Inputs */}
+                <div className="flex gap-4 items-center">
+                    <div className="w-auto min-w-[300px]">
+                        <SearchInput
+                            value={searchTerm}
+                            onChange={setSearchTerm}
+                            placeholder="Search shopping items..."
+                        />
+                    </div>
+                    <div>
+                        <input
+                            type="month"
+                            value={selectedMonth}
+                            onChange={(e) => setSelectedMonth(e.target.value)}
+                            className="form-input"
+                        />
+                    </div>
                 </div>
 
                 {/* Add buttons */}

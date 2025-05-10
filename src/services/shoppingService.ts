@@ -77,13 +77,22 @@ export async function deleteShoppingCategory(id: number): Promise<void> {
     }
 }
 
-export async function getAllShoppingItems(): Promise<(ShoppingItem & { category_name: string })[]> {
+export async function getAllShoppingItems(month?: string): Promise<(ShoppingItem & { category_name: string })[]> {
     try {
-        const [rows] = await pool.query(`
+        let query = `
             SELECT si.*, sc.name as category_name 
             FROM shopping_items si 
             JOIN shopping_categories sc ON si.category_id = sc.id
-        `);
+        `;
+        
+        const params: any[] = [];
+        
+        if (month) {
+            query += ` WHERE DATE_FORMAT(si.month, '%Y-%m') = ?`;
+            params.push(month);
+        }
+        
+        const [rows] = await pool.query(query, params);
         return rows as (ShoppingItem & { category_name: string })[];
     } catch (error) {
         console.error('Error fetching shopping items:', error);

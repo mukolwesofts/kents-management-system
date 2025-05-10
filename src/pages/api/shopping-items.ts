@@ -5,7 +5,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
         switch (req.method) {
             case 'GET': {
-                const items = await getAllShoppingItems();
+                const { month } = req.query;
+                const items = await getAllShoppingItems(month as string);
                 res.status(200).json(items);
                 break;
             }
