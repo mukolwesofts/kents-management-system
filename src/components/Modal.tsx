@@ -26,7 +26,7 @@ export default function Modal({ isOpen, onClose, trigger, title, children }: Mod
                     />
 
                     {/* Modal */}
-                    <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+                    <div className="relative bg-white rounded-lg shadow-xl w-auto mx-4">
                         {/* Header */}
                         <div className="flex items-center justify-between p-4 border-b border-gray-300">
                             <div className="text-lg font-semibold">{title}</div>

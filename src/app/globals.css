@@ -30,7 +30,7 @@ body {
     }
 
     .form-button {
-        @apply inline-flex justify-center rounded-md border border-transparent bg-teal-600 py-3 px-8 text-sm font-semibold text-white shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 cursor-pointer;
+        @apply inline-flex justify-center rounded-md border border-transparent bg-teal-600 py-2 px-6 text-sm font-semibold text-white shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 cursor-pointer;
     }
 
     .btn {
@@ -39,5 +39,9 @@ body {
 
     .btn-icon {
         @apply inline-flex justify-center rounded-md border-none bg-gray-50 p-2 text-sm font-semibold shadow-none hover:bg-gray-100 outline-none focus:ring-0 cursor-pointer;
+    }
+
+    .btn-secondary {
+        @apply inline-flex justify-center rounded-md border border-teal-600 bg-transparent py-1.5 px-3 text-sm font-semibold text-teal-600 shadow-sm hover:text-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 cursor-pointer;
     }
 }
