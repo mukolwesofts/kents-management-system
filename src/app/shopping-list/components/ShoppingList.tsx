@@ -6,22 +6,8 @@ import SearchInput from '@/components/SearchInput';
 import Modal from '@/components/Modal';
 import ShoppingItemForm from './ShoppingItemForm';
 import CategoryForm from './CategoryForm';
-
-interface ShoppingItem {
-    id: number;
-    name: string;
-    quantity: number;
-    estimated_price: number;
-    notes?: string;
-    category_id: number;
-    category_name: string;
-    month: string;
-}
-
-interface ShoppingCategory {
-    id: number;
-    name: string;
-}
+import ShoppingListSummary from './ShoppingListSummary';
+import { ShoppingItem, ShoppingCategory } from './types';
 
 export default function ShoppingList() {
     const [shoppingItems, setShoppingItems] = useState<ShoppingItem[]>([]);
@@ -149,6 +135,8 @@ export default function ShoppingList() {
 
     return (
         <div className="space-y-8">
+            <ShoppingListSummary items={shoppingItems} />
+            
             <div className="flex items-center justify-between">
                 {/* Search and Filter Inputs */}
                 <div className="flex gap-4 items-center">
