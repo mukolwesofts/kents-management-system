@@ -6,6 +6,7 @@ import SearchInput from '@/components/SearchInput';
 import Modal from '@/components/Modal';
 import IncomeForm from './IncomeForm';
 import IncomeSummary from './IncomeSummary';
+import Shimmer from '@/components/Shimmer';
 import { formatCurrency } from '@/utils/formatters';
 
 interface Income {
@@ -27,15 +28,23 @@ export default function IncomeList() {
         new Date().toISOString().slice(0, 7)
     );
     const [refreshKey, setRefreshKey] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         fetchIncome();
     }, [selectedMonth]);
 
     const fetchIncome = async () => {
-        const response = await fetch(`/api/income?month=${selectedMonth}`);
-        const data = await response.json();
-        setIncome(data);
+        setIsLoading(true);
+        try {
+            const response = await fetch(`/api/income?month=${selectedMonth}`);
+            const data = await response.json();
+            setIncome(data);
+        } catch (error) {
+            console.error('Error fetching income:', error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleAddOrUpdate = async (incomeData: Omit<Income, 'id' | 'family_member_name' | 'family_member_designation'>) => {
@@ -118,7 +127,7 @@ export default function IncomeList() {
 
     return (
         <div className="space-y-8">
-            <IncomeSummary selectedMonth={selectedMonth} key={refreshKey} />
+            <IncomeSummary items={income} isLoading={isLoading} />
             
             <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
@@ -162,13 +171,17 @@ export default function IncomeList() {
                 </Modal>
             </div>
 
-            <Table
-                columns={columns}
-                data={income}
-                searchTerm={searchTerm}
-                searchFields={['family_member_name', 'source']}
-                actions={actions}
-            />
+            {isLoading ? (
+                <Shimmer type="table" rows={5} columns={columns.length + 1} />
+            ) : (
+                <Table
+                    columns={columns}
+                    data={income}
+                    searchTerm={searchTerm}
+                    searchFields={['family_member_name', 'source']}
+                    actions={actions}
+                />
+            )}
         </div>
     );
 } 

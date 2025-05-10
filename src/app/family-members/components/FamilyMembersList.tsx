@@ -5,6 +5,7 @@ import Table from '@/components/Table';
 import SearchInput from '@/components/SearchInput';
 import Modal from '@/components/Modal';
 import FamilyMemberForm from './FamilyMemberForm';
+import Shimmer from '@/components/Shimmer';
 
 interface FamilyMember {
     id: number;
@@ -17,15 +18,23 @@ export default function FamilyMembersList() {
     const [searchTerm, setSearchTerm] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentFamilyMember, setCurrentFamilyMember] = useState<FamilyMember | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         fetchFamilyMembers();
     }, []);
 
     const fetchFamilyMembers = async () => {
-        const response = await fetch('/api/family-members');
-        const data = await response.json();
-        setFamilyMembers(data);
+        setIsLoading(true);
+        try {
+            const response = await fetch('/api/family-members');
+            const data = await response.json();
+            setFamilyMembers(data);
+        } catch (error) {
+            console.error('Error fetching family members:', error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleAddOrUpdate = async (member: Omit<FamilyMember, 'id'>) => {
@@ -124,13 +133,17 @@ export default function FamilyMembersList() {
             </div>
 
             {/* Family members table */}
-            <Table
-                columns={columns}
-                data={familyMembers}
-                searchTerm={searchTerm}
-                searchFields={['name', 'designation']}
-                actions={actions}
-            />
+            {isLoading ? (
+                <Shimmer type="table" rows={5} columns={columns.length + 1} />
+            ) : (
+                <Table
+                    columns={columns}
+                    data={familyMembers}
+                    searchTerm={searchTerm}
+                    searchFields={['name', 'designation']}
+                    actions={actions}
+                />
+            )}
         </div>
     );
 }

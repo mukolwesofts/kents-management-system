@@ -1,10 +1,16 @@
 import { ShoppingItem } from './types';
+import Shimmer from '@/components/Shimmer';
 
 interface ShoppingListSummaryProps {
     items: ShoppingItem[];
+    isLoading?: boolean;
 }
 
-export default function ShoppingListSummary({ items }: ShoppingListSummaryProps) {
+export default function ShoppingListSummary({ items, isLoading = false }: ShoppingListSummaryProps) {
+    if (isLoading) {
+        return <Shimmer type="summary" />;
+    }
+
     const totalEstimatedPrice = items.reduce((sum, item) => {
         const price = typeof item.estimated_price === 'string' 
             ? parseFloat(item.estimated_price) 

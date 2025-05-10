@@ -7,6 +7,7 @@ import Modal from '@/components/Modal';
 import ShoppingItemForm from './ShoppingItemForm';
 import CategoryForm from './CategoryForm';
 import ShoppingListSummary from './ShoppingListSummary';
+import Shimmer from '@/components/Shimmer';
 import { ShoppingItem, ShoppingCategory } from './types';
 
 export default function ShoppingList() {
@@ -17,15 +18,23 @@ export default function ShoppingList() {
     const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
     const [currentItem, setCurrentItem] = useState<ShoppingItem | null>(null);
     const [currentCategory, setCurrentCategory] = useState<ShoppingCategory | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         fetchShoppingItems();
     }, [selectedMonth]);
 
     const fetchShoppingItems = async () => {
-        const response = await fetch(`/api/shopping-items?month=${selectedMonth}`);
-        const data = await response.json();
-        setShoppingItems(data);
+        setIsLoading(true);
+        try {
+            const response = await fetch(`/api/shopping-items?month=${selectedMonth}`);
+            const data = await response.json();
+            setShoppingItems(data);
+        } catch (error) {
+            console.error('Error fetching shopping items:', error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleAddOrUpdateItem = async (item: Omit<ShoppingItem, 'id' | 'category_name'>) => {
@@ -135,7 +144,7 @@ export default function ShoppingList() {
 
     return (
         <div className="space-y-8">
-            <ShoppingListSummary items={shoppingItems} />
+            <ShoppingListSummary items={shoppingItems} isLoading={isLoading} />
             
             <div className="flex items-center justify-between">
                 {/* Search and Filter Inputs */}
@@ -158,7 +167,7 @@ export default function ShoppingList() {
                 </div>
 
                 {/* Add buttons */}
-                <div className="flex gap-4">
+                <div className="flex gap-2">
                     <Modal
                         isOpen={isCategoryModalOpen}
                         onClose={handleCloseCategoryModal}
@@ -200,13 +209,17 @@ export default function ShoppingList() {
             </div>
 
             {/* Shopping items table */}
-            <Table
-                columns={columns}
-                data={shoppingItems}
-                searchTerm={searchTerm}
-                searchFields={['name', 'category_name', 'notes']}
-                actions={actions}
-            />
+            {isLoading ? (
+                <Shimmer type="table" rows={5} columns={columns.length} />
+            ) : (
+                <Table
+                    columns={columns}
+                    data={shoppingItems}
+                    searchTerm={searchTerm}
+                    searchFields={['name', 'category_name', 'notes']}
+                    actions={actions}
+                />
+            )}
         </div>
     );
 } 

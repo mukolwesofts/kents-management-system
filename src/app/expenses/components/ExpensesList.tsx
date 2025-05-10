@@ -7,6 +7,7 @@ import Modal from '@/components/Modal';
 import ExpenseForm from './ExpenseForm';
 import ExpenseCategoryForm from './ExpenseCategoryForm';
 import ExpenseSummary from './ExpenseSummary';
+import Shimmer from '@/components/Shimmer';
 import { Expense } from '@/services/expenseService';
 import { ExpenseCategory } from '@/services/expenseCategoryService';
 import { formatCurrency } from '@/utils/formatters';
@@ -24,6 +25,7 @@ export default function ExpensesList() {
         return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
     });
     const [refreshKey, setRefreshKey] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         fetchExpenses();
@@ -31,15 +33,26 @@ export default function ExpensesList() {
     }, [selectedMonth]);
 
     const fetchExpenses = async () => {
-        const response = await fetch(`/api/expenses?month=${selectedMonth}`);
-        const data = await response.json();
-        setExpenses(data);
+        setIsLoading(true);
+        try {
+            const response = await fetch(`/api/expenses?month=${selectedMonth}`);
+            const data = await response.json();
+            setExpenses(data);
+        } catch (error) {
+            console.error('Error fetching expenses:', error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const fetchCategories = async () => {
-        const response = await fetch('/api/expense-categories');
-        const data = await response.json();
-        setCategories(data);
+        try {
+            const response = await fetch('/api/expense-categories');
+            const data = await response.json();
+            setCategories(data);
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+        }
     };
 
     const handleAddOrUpdate = async (expense: Omit<Expense, 'id'>) => {
@@ -175,22 +188,18 @@ export default function ExpensesList() {
 
     return (
         <div className="space-y-8">
-            {/* Summary */}
-            <ExpenseSummary selectedMonth={selectedMonth} key={refreshKey} />
-
+            <ExpenseSummary items={expenses} isLoading={isLoading} />
+            
             <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-
-                    {/* Search Input */}
-                    <div className="max-w-sm w-full">
+                {/* Search and Filter Inputs */}
+                <div className="flex gap-4 items-center">
+                    <div className="w-auto min-w-[300px]">
                         <SearchInput
                             value={searchTerm}
                             onChange={setSearchTerm}
                             placeholder="Search expenses..."
                         />
                     </div>
-
-                    {/* Month Filter */}
                     <div>
                         <input
                             type="month"
@@ -201,8 +210,8 @@ export default function ExpensesList() {
                     </div>
                 </div>
 
-                <div className="flex space-x-4">
-                    {/* Manage Categories Modal */}
+                {/* Add buttons */}
+                <div className="flex gap-2">
                     <Modal
                         isOpen={isCategoryModalOpen}
                         onClose={handleCloseCategoryModal}
@@ -211,7 +220,7 @@ export default function ExpensesList() {
                                 onClick={() => handleOpenCategoryModal()}
                                 className="btn-secondary"
                             >
-                                Manage Categories
+                                Add Category
                             </button>
                         }
                         title={currentCategory ? 'Edit Category' : 'Add Category'}
@@ -222,7 +231,6 @@ export default function ExpensesList() {
                         />
                     </Modal>
 
-                    {/* Add Expense Modal */}
                     <Modal
                         isOpen={isModalOpen}
                         onClose={handleClose}
@@ -245,13 +253,17 @@ export default function ExpensesList() {
             </div>
 
             {/* Expenses table */}
-            <Table
-                columns={columns}
-                data={expenses}
-                searchTerm={searchTerm}
-                searchFields={['name', 'category_name']}
-                actions={actions}
-            />
+            {isLoading ? (
+                <Shimmer type="table" rows={5} columns={columns.length + 1} />
+            ) : (
+                <Table
+                    columns={columns}
+                    data={expenses}
+                    searchTerm={searchTerm}
+                    searchFields={['name', 'category_name']}
+                    actions={actions}
+                />
+            )}
         </div>
     );
 } 
