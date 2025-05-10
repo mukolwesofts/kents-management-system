@@ -13,7 +13,7 @@ const navItems = [
 
 export default function Sidebar() {
     return (
-        <aside className="w-64 bg-teal-700 text-white flex flex-col min-h-screen shadow-lg">
+        <aside className="fixed top-0 left-0 w-64 bg-teal-700 text-white flex flex-col h-screen shadow-lg">
             <div className="flex items-center gap-2 px-6 py-6 text-2xl font-bold tracking-wide border-b border-teal-800">
                 <span className="bg-white rounded p-1 text-teal-700">💰</span>
                 Kents
