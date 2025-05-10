@@ -122,12 +122,12 @@ export default function ExpensesList() {
     };
 
     const columns = [
-        { 
-            header: 'Category', 
+        {
+            header: 'Category',
             accessor: 'category_name' as keyof Expense,
         },
-        { 
-            header: 'Name', 
+        {
+            header: 'Name',
             accessor: 'name' as keyof Expense,
         },
         {
@@ -175,28 +175,30 @@ export default function ExpensesList() {
 
     return (
         <div className="space-y-8">
-            <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold text-teal-700">Expenses</h1>
-                <div className="flex items-center space-x-4">
-                    <input
-                        type="month"
-                        value={selectedMonth}
-                        onChange={(e) => setSelectedMonth(e.target.value)}
-                        className="form-input"
-                    />
-                </div>
-            </div>
-
+            {/* Summary */}
             <ExpenseSummary selectedMonth={selectedMonth} key={refreshKey} />
 
             <div className="flex items-center justify-between">
-                {/* Search Input */}
-                <div className="max-w-sm w-full">
-                    <SearchInput
-                        value={searchTerm}
-                        onChange={setSearchTerm}
-                        placeholder="Search expenses..."
-                    />
+                <div className="flex items-center space-x-4">
+
+                    {/* Search Input */}
+                    <div className="max-w-sm w-full">
+                        <SearchInput
+                            value={searchTerm}
+                            onChange={setSearchTerm}
+                            placeholder="Search expenses..."
+                        />
+                    </div>
+
+                    {/* Month Filter */}
+                    <div>
+                        <input
+                            type="month"
+                            value={selectedMonth}
+                            onChange={(e) => setSelectedMonth(e.target.value)}
+                            className="form-input"
+                        />
+                    </div>
                 </div>
 
                 <div className="flex space-x-4">
