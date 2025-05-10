@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useEffect, useState } from 'react';
+import { getMonthFromISO } from '@/utils/formatters';
 
 const shoppingItemSchema = z.object({
     name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -37,12 +38,6 @@ export default function ShoppingItemForm({ initialData, onSubmit }: ShoppingItem
         const response = await fetch('/api/shopping-categories');
         const data = await response.json();
         setCategories(data);
-    };
-
-    const getMonthFromISO = (isoString: string) => {
-        const date = new Date(isoString);
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        return `${date.getFullYear()}-${month}`;
     };
 
     const {
