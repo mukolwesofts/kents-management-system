@@ -74,3 +74,19 @@ INSERT INTO shopping_categories (name) VALUES
 ('Pet Supplies'), // pet related items
 ('Office Supplies'), // office stationery items
 ('Other'); // miscellaneous items
+
+
+CREATE TABLE saving_goals (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    family_member_id INT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    description TEXT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NULL,
+    target_amount DECIMAL(10,2) NOT NULL,
+    goal_type VARCHAR(20) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'completed', 'hold', 'failed')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (family_member_id) REFERENCES family_members(id)
+);

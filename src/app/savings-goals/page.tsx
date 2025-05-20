@@ -1,8 +1,13 @@
-export default function SavingsGoalsPage() {
+import SavingGoalsList from './components/SavingGoalsList';
+
+export default function SavingGoalsPage() {
     return (
         <div>
-            <h1 className="text-2xl font-bold text-teal-700 mb-4">Savings Goals</h1>
-            <p>This is the savings goals index page.</p>
+            <div className="flex items-center justify-between mb-8">
+                <h1 className="text-2xl font-bold text-teal-700 mb-4">Saving Goals</h1>
+            </div>
+
+            <SavingGoalsList />
         </div>
     );
 }
